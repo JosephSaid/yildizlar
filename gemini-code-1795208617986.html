@@ -301,73 +301,22 @@
       color: var(--text-muted);
     }
 
-    /* Düzenleme Paneli */
-    .edit-card {
-      max-width: 540px;
-      max-height: 85vh;
-      overflow-y: auto;
-      text-align: left;
-    }
-
-    .edit-card h2 {
-      font-family: 'Cinzel', serif;
-      font-size: 1.3rem;
-      color: var(--gold);
-      margin-bottom: 6px;
-    }
-
-    .edit-card p {
-      font-size: 0.83rem;
-      color: var(--text-muted);
-      margin-bottom: 18px;
-    }
-
-    .form-group {
-      margin-bottom: 14px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 0.78rem;
-      color: #cbd5e1;
-      margin-bottom: 5px;
-      font-weight: 500;
-    }
-
-    .form-group input,
-    .form-group textarea {
+    /* Fotoğraf Alanı Tasarımı */
+    .photo-container {
       width: 100%;
-      background: rgba(4, 7, 17, 0.75);
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      border-radius: 10px;
-      padding: 9px 12px;
-      color: #fff;
-      font-family: inherit;
-      font-size: 0.86rem;
-      resize: vertical;
+      max-height: 320px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(245, 208, 118, 0.3);
+      margin-bottom: 16px;
+      background: rgba(0,0,0,0.3);
     }
 
-    .form-group input:focus,
-    .form-group textarea:focus {
-      outline: none;
-      border-color: var(--gold);
-    }
-
-    .edit-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    .btn-save {
-      background: var(--gold);
-      color: #090d16;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 10px;
-      font-weight: 600;
-      cursor: pointer;
+    .photo-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     @media (max-width: 640px) {
@@ -392,7 +341,7 @@
 
   <!-- Üst Alan -->
   <header class="top-bar">
-    <div style="width: 140px;" class="spacer"></div>
+    <div style="width: 100px;" class="spacer"></div>
     <div class="title-block">
       <div class="date-badge" id="badgeText">✦ 4 EYLÜL • HATİCE & YUSUF ✦</div>
     </div>
@@ -400,16 +349,13 @@
       <button class="btn-glass" id="shootingStarBtn" title="Kayan yıldız gönder">
         <span>🌠</span> Kayan Yıldız Göster
       </button>
-      <button class="btn-glass" id="editBtn" title="Notları özelleştir">
-        <span>✎</span> Notları Düzenle
-      </button>
     </div>
   </header>
 
-  <!-- Alt İpucu & Final Mektup Butonu -->
+  <!-- Alt İpucu & Fotoğraf Butonu -->
   <footer class="bottom-bar">
     <button class="final-letter-btn" id="openLetterBtn">
-      <span>💌</span> Hatice'ye Özel Gökyüzü Mektubunu Aç
+      <span>💌</span> Hatice'ye Özel Fotoğrafını Gör
     </button>
     <div class="hint-pill">
       <span class="pulse-dot"></span>
@@ -429,37 +375,20 @@
     </div>
   </div>
 
-  <!-- Final Mektup Modalı -->
+  <!-- Fotoğraf Modalı -->
   <div class="modal-backdrop" id="letterModal">
     <div class="star-card">
       <button class="close-btn" id="closeLetterModal">✕</button>
       <span class="star-tag">4 EYLÜL'DEN SONSUZA</span>
-      <h2 class="star-title">İyi Ki Hayatımın Gökyüzüsün</h2>
+      <h2 class="star-title">İyi Ki Varsın</h2>
       <div class="star-divider"></div>
-      <p class="star-message" id="finalLetterContent" style="font-size: 1.18rem;">
-        Sevgili Hatice,<br><br>
-        4 Eylül gecesi gökyüzündeki tüm yıldızlar sanki bizim hikayemiz başlasın diye hizalanmıştı. İkizler burcunun o eşsiz enerjisi, zekan ve gülüşünle hayatıma girdiğin günden beri aramızdaki mesafe ne olursa olsun başımı gökyüzüne her kaldırdığımda seni görüyorum. İyi ki varsın, seni çok seviyorum.<br><br>
-        — Yusuf
-      </p>
-      <div class="star-footer-note">✦ Hatice & Yusuf ✦</div>
-    </div>
-  </div>
+      
+      <!-- FOTOĞRAFIN GÖRÜNECEĞİ YER (Buraya kendi dosya adını yazacaksın) -->
+      <div class="photo-container">
+        <img src="SENIN_FOTOGRAFININ_ADI.jpg" alt="Hatice'ye Özel Fotoğraf" />
+      </div>
 
-  <!-- Notları Düzenleme Modalı -->
-  <div class="modal-backdrop" id="editModal">
-    <div class="star-card edit-card">
-      <button class="close-btn" id="closeEditModal">✕</button>
-      <h2>Yıldız Notlarını Özelleştir</h2>
-      <p>Hatice için her bir İkizler yıldızının içindeki mesajı ve final mektubunu kendi cümlelerinle güncelleyebilirsin.</p>
-      <div id="editFieldsContainer"></div>
-      <div class="form-group">
-        <label>Final Mektubu</label>
-        <textarea id="editFinalLetter" rows="4"></textarea>
-      </div>
-      <div class="edit-actions">
-        <button class="btn-glass" id="resetDefaultBtn">Varsayılana Dön</button>
-        <button class="btn-save" id="saveEditBtn">Kaydet</button>
-      </div>
+      <div class="star-footer-note">✦ Hatice & Yusuf ✦</div>
     </div>
   </div>
 
@@ -474,8 +403,7 @@
     let hoveredStar = null;
     let loveTextTimeout = null;
 
-    // İstediğin yeni 7 yıldız notu
-    const defaultStars = [
+    const starsData = [
       {
         id: 'castor',
         name: 'Castor',
@@ -562,7 +490,6 @@
       }
     ];
 
-    // İkizler Takımyıldızı Bağlantı Çizgileri
     const constellationLinks = [
       ['castor', 'pollux'],
       ['castor', 'mebsuta'],
@@ -572,10 +499,6 @@
       ['mekbuda', 'alhena'],
       ['mebsuta', 'wasat']
     ];
-
-    let starsData = JSON.parse(localStorage.getItem('hatice_yusuf_stars_v2')) || structuredClone(defaultStars);
-    let finalLetterText = localStorage.getItem('hatice_yusuf_letter_v2') || document.getElementById('finalLetterContent').innerHTML;
-    document.getElementById('finalLetterContent').innerHTML = finalLetterText;
 
     function resize() {
       width = canvas.width = window.innerWidth;
@@ -812,46 +735,6 @@
 
     document.getElementById('shootingStarBtn').onclick = () => {
       spawnShootingStar(true);
-    };
-
-    document.getElementById('editBtn').onclick = () => {
-      const container = document.getElementById('editFieldsContainer');
-      container.innerHTML = '';
-      starsData.forEach((st, idx) => {
-        container.innerHTML += `
-          <div class="form-group">
-            <label>${st.name} Yıldızı Başlığı & Mesajı</label>
-            <input type="text" id="editTitle_${idx}" value="${st.title.replace(/"/g, '"')}" style="margin-bottom:6px;" />
-            <textarea id="editMsg_${idx}" rows="2">${st.message}</textarea>
-          </div>
-        `;
-      });
-      document.getElementById('editFinalLetter').value =
-        document.getElementById('finalLetterContent').innerText;
-      document.getElementById('editModal').classList.add('active');
-    };
-
-    document.getElementById('closeEditModal').onclick = () =>
-      document.getElementById('editModal').classList.remove('active');
-
-    document.getElementById('saveEditBtn').onclick = () => {
-      starsData.forEach((st, idx) => {
-        st.title = document.getElementById(`editTitle_${idx}`).value;
-        st.message = document.getElementById(`editMsg_${idx}`).value;
-      });
-      const rawLetter = document.getElementById('editFinalLetter').value;
-      const formattedLetter = rawLetter.replace(/\n/g, '<br>');
-      document.getElementById('finalLetterContent').innerHTML = formattedLetter;
-
-      localStorage.setItem('hatice_yusuf_stars_v2', JSON.stringify(starsData));
-      localStorage.setItem('hatice_yusuf_letter_v2', formattedLetter);
-      document.getElementById('editModal').classList.remove('active');
-    };
-
-    document.getElementById('resetDefaultBtn').onclick = () => {
-      localStorage.removeItem('hatice_yusuf_stars_v2');
-      localStorage.removeItem('hatice_yusuf_letter_v2');
-      location.reload();
     };
 
     document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
