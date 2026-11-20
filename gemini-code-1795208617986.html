@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hatice & Yusuf</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #040711;
+      --bg-mid: #0a1128;
+      --gold: #f5d076;
+      --gold-glow: rgba(245, 208, 118, 0.55);
+      --blue-star: #93c5fd;
+      --glass: rgba(11, 18, 38, 0.72);
+      --glass-border: rgba(245, 208, 118, 0.22);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background: radial-gradient(ellipse at 50% 35%, #111d42 0%, #070c1e 55%, #03050c 100%);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+    }
+
+    canvas#skyCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      cursor: crosshair;
+    }
+
+    /* Üst Alan */
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      padding: 22px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      pointer-events: none;
+    }
+
+    .title-block {
+      text-align: center;
+      flex: 1;
+      padding: 0 12px;
+    }
+
+    .date-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(245, 208, 118, 0.1);
+      border: 1px solid rgba(245, 208, 118, 0.3);
+      color: var(--gold);
+      padding: 5px 16px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      backdrop-filter: blur(8px);
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      pointer-events: auto;
+    }
+
+    .btn-glass {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      color: var(--text-main);
+      padding: 9px 14px;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      backdrop-filter: blur(12px);
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.25s ease;
+    }
+
+    .btn-glass:hover {
+      border-color: var(--gold);
+      background: rgba(245, 208, 118, 0.14);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    }
+
+    /* Kayan Yıldız Aşk Yazısı */
+    #shootingLoveText {
+      position: fixed;
+      z-index: 6;
+      pointer-events: none;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(1.05rem, 2vw, 1.38rem);
+      letter-spacing: 0.06em;
+      color: #fef3c7;
+      text-shadow:
+        0 0 10px rgba(245, 208, 118, 0.9),
+        0 0 24px rgba(147, 197, 253, 0.75);
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.92);
+      transition: opacity 0.9s ease, transform 2.8s cubic-bezier(0.22, 1, 0.36, 1);
+      white-space: nowrap;
+    }
+
+    #shootingLoveText.visible {
+      opacity: 1;
+      transform: translate(-50%, -68%) scale(1);
+    }
+
+    /* Alt Alan */
+    .bottom-bar {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: min(92vw, 560px);
+      pointer-events: none;
+    }
+
+    .hint-pill {
+      background: var(--glass);
+      border: 1px solid rgba(147, 197, 253, 0.25);
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 0.84rem;
+      color: #e2e8f0;
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 10px var(--gold);
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.45); opacity: 0.55; }
+    }
+
+    .final-letter-btn {
+      pointer-events: auto;
+      background: linear-gradient(135deg, #f5d076 0%, #eab308 100%);
+      color: #090d16;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      box-shadow: 0 0 28px rgba(245, 208, 118, 0.55);
+      display: none;
+      align-items: center;
+      gap: 8px;
+      animation: floatBtn 2.5s ease-in-out infinite;
+    }
+
+    .final-letter-btn.show {
+      display: inline-flex;
+    }
+
+    @keyframes floatBtn {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    /* Modal / Kartlar */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 5, 14, 0.68);
+      backdrop-filter: blur(6px);
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .star-card {
+      background: linear-gradient(160deg, rgba(16, 25, 52, 0.94) 0%, rgba(8, 13, 28, 0.97) 100%);
+      border: 1px solid rgba(245, 208, 118, 0.38);
+      border-radius: 24px;
+      max-width: 440px;
+      width: 100%;
+      padding: 30px 28px;
+      position: relative;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(245, 208, 118, 0.14);
+      transform: translateY(16px) scale(0.96);
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      text-align: center;
+    }
+
+    .modal-backdrop.active .star-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: all 0.2s;
+    }
+
+    .close-btn:hover {
+      background: rgba(245, 208, 118, 0.2);
+      color: #fff;
+    }
+
+    .star-tag {
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--gold);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .star-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.45rem;
+      color: #fff;
+      margin-bottom: 14px;
+    }
+
+    .star-divider {
+      width: 48px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 0 auto 16px;
+    }
+
+    .star-message {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.28rem;
+      line-height: 1.65;
+      color: #f1f5f9;
+      margin-bottom: 22px;
+    }
+
+    .star-footer-note {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* Düzenleme Paneli */
+    .edit-card {
+      max-width: 540px;
+      max-height: 85vh;
+      overflow-y: auto;
+      text-align: left;
+    }
+
+    .edit-card h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.3rem;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+
+    .edit-card p {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.78rem;
+      color: #cbd5e1;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      background: rgba(4, 7, 17, 0.75);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 10px;
+      padding: 9px 12px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.86rem;
+      resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+
+    .edit-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .btn-save {
+      background: var(--gold);
+      color: #090d16;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    @media (max-width: 640px) {
+      .top-bar {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 16px;
+      }
+      .top-actions {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="skyCanvas"></canvas>
+
+  <!-- Kayan Yıldız ile Beliren Yazı -->
+  <div id="shootingLoveText">Seni çok seviyorum Hatice</div>
+
+  <!-- Üst Alan -->
+  <header class="top-bar">
+    <div style="width: 140px;" class="spacer"></div>
+    <div class="title-block">
+      <div class="date-badge" id="badgeText">✦ 4 EYLÜL • HATİCE & YUSUF ✦</div>
+    </div>
+    <div class="top-actions">
+      <button class="btn-glass" id="shootingStarBtn" title="Kayan yıldız gönder">
+        <span>🌠</span> Kayan Yıldız Göster
+      </button>
+      <button class="btn-glass" id="editBtn" title="Notları özelleştir">
+        <span>✎</span> Notları Düzenle
+      </button>
+    </div>
+  </header>
+
+  <!-- Alt İpucu & Final Mektup Butonu -->
+  <footer class="bottom-bar">
+    <button class="final-letter-btn" id="openLetterBtn">
+      <span>💌</span> Hatice'ye Özel Gökyüzü Mektubunu Aç
+    </button>
+    <div class="hint-pill">
+      <span class="pulse-dot"></span>
+      <span id="progressText">İkizler'in parlayan yıldızlarına dokun (0/7 keşfedildi)</span>
+    </div>
+  </footer>
+
+  <!-- Yıldız Mesaj Modalı -->
+  <div class="modal-backdrop" id="starModal">
+    <div class="star-card">
+      <button class="close-btn" id="closeStarModal">✕</button>
+      <span class="star-tag" id="modalStarCode">GEMINI • CASTOR</span>
+      <h2 class="star-title" id="modalStarTitle">Yıldız Başlığı</h2>
+      <div class="star-divider"></div>
+      <p class="star-message" id="modalStarMsg">Yıldız mesajı buraya gelecek.</p>
+      <div class="star-footer-note" id="modalStarCoord">4 Eylül Gökyüzü Koordinatı</div>
+    </div>
+  </div>
+
+  <!-- Final Mektup Modalı -->
+  <div class="modal-backdrop" id="letterModal">
+    <div class="star-card">
+      <button class="close-btn" id="closeLetterModal">✕</button>
+      <span class="star-tag">4 EYLÜL'DEN SONSUZA</span>
+      <h2 class="star-title">İyi Ki Hayatımın Gökyüzüsün</h2>
+      <div class="star-divider"></div>
+      <p class="star-message" id="finalLetterContent" style="font-size: 1.18rem;">
+        Sevgili Hatice,<br><br>
+        4 Eylül gecesi gökyüzündeki tüm yıldızlar sanki bizim hikayemiz başlasın diye hizalanmıştı. İkizler burcunun o eşsiz enerjisi, zekan ve gülüşünle hayatıma girdiğin günden beri aramızdaki mesafe ne olursa olsun başımı gökyüzüne her kaldırdığımda seni görüyorum. İyi ki varsın, seni çok seviyorum.<br><br>
+        — Yusuf
+      </p>
+      <div class="star-footer-note">✦ Hatice & Yusuf ✦</div>
+    </div>
+  </div>
+
+  <!-- Notları Düzenleme Modalı -->
+  <div class="modal-backdrop" id="editModal">
+    <div class="star-card edit-card">
+      <button class="close-btn" id="closeEditModal">✕</button>
+      <h2>Yıldız Notlarını Özelleştir</h2>
+      <p>Hatice için her bir İkizler yıldızının içindeki mesajı ve final mektubunu kendi cümlelerinle güncelleyebilirsin.</p>
+      <div id="editFieldsContainer"></div>
+      <div class="form-group">
+        <label>Final Mektubu</label>
+        <textarea id="editFinalLetter" rows="4"></textarea>
+      </div>
+      <div class="edit-actions">
+        <button class="btn-glass" id="resetDefaultBtn">Varsayılana Dön</button>
+        <button class="btn-save" id="saveEditBtn">Kaydet</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('skyCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let width, height;
+    let bgStars = [];
+    let shootingStars = [];
+    let discoveredIds = new Set();
+    let hoveredStar = null;
+    let loveTextTimeout = null;
+
+    // İstediğin yeni 7 yıldız notu
+    const defaultStars = [
+      {
+        id: 'castor',
+        name: 'Castor',
+        code: 'α GEMINORUM • İKİZLER\'İN PARLAK YILDIZI',
+        nx: 0.43,
+        ny: 0.25,
+        size: 6.2,
+        color: '#fde68a',
+        title: 'Her sabah günümü aydınlatıyorsun',
+        message: 'Seni her gördüğüm sabah, her gördüğüm an içimi ısıtıyorsun.',
+        coord: 'RA 07h 34m • Dec +31° 53′'
+      },
+      {
+        id: 'pollux',
+        name: 'Pollux',
+        code: 'β GEMINORUM • ALTIN YILDIZ',
+        nx: 0.56,
+        ny: 0.29,
+        size: 6.6,
+        color: '#f5d076',
+        title: 'Gülüşün',
+        message: 'Yüzündeki gülümseme beni o an kötü hissetsem de neşe ile dolmama sebep oluyor, seni mutsuz görünce ben de o kadar çok kötü oluyorum.',
+        coord: 'RA 07h 45m • Dec +28° 01′'
+      },
+      {
+        id: 'mebsuta',
+        name: 'Mebsuta',
+        code: 'ε GEMINORUM • GÖKYÜZÜ İNCİSİ',
+        nx: 0.36,
+        ny: 0.42,
+        size: 5.2,
+        color: '#bfdbfe',
+        title: 'Sabırlı ve Kararlı Olman',
+        message: 'Olduğun kişi ve yaşadığın sıkıntılar beni sana karşı hayran bırakıyor. Keşke senin yanında olup destek olabilsem diyorum, hatta keşke bunları yaşayan ben olsaydım da o üzülmese diyorum ama elimden sadece senle konuşmak geliyo.',
+        coord: 'RA 06h 43m • Dec +25° 07′'
+      },
+      {
+        id: 'wasat',
+        name: 'Wasat',
+        code: 'δ GEMINORUM • KALP NOKTASI',
+        nx: 0.52,
+        ny: 0.47,
+        size: 5.3,
+        color: '#fde68a',
+        title: 'Enerjin',
+        message: 'Bombastik bir enerjin var senleyken çok heyecanlanıyom.',
+        coord: 'RA 07h 20m • Dec +21° 58′'
+      },
+      {
+        id: 'mekbuda',
+        name: 'Mekbuda',
+        code: 'ζ GEMINORUM • IŞIK HUZMESİ',
+        nx: 0.48,
+        ny: 0.60,
+        size: 5.0,
+        color: '#93c5fd',
+        title: 'Uzak olmak',
+        message: 'Her istediğimizde bulasamayıp uzak yerlerde olsak da seni gördüğüm saniye buna değiyor. Bazen sana sadece saatlerce bakmak istiyorum.',
+        coord: 'RA 07h 04m • Dec +20° 34′'
+      },
+      {
+        id: 'tejat',
+        name: 'Tejat',
+        code: 'μ GEMINORUM • SAF PARILTI',
+        nx: 0.31,
+        ny: 0.63,
+        size: 5.2,
+        color: '#f5d076',
+        title: 'Ben',
+        message: 'Biliyorum içimi açıp ne düşündüğümü ne hissettiğimi belki göremiyorsun ama seni tüm samimiyetimle seviyorum. Her ne kadar özürlü gibi yazsam da bazen beni anlıyosun ve darılmıyosun.',
+        coord: 'RA 06h 22m • Dec +22° 30′'
+      },
+      {
+        id: 'alhena',
+        name: 'Alhena',
+        code: 'γ GEMINORUM • GECEYİ AYDINLATAN',
+        nx: 0.43,
+        ny: 0.74,
+        size: 5.8,
+        color: '#ffffff',
+        title: 'Seni çok seviyorum, İyi ki varsın ve benimlesin',
+        message: 'Sanal gökyüzündeki tüm yıldızlar ve 4 Eylül gecemiz şahidim olsun ki iyi ki varsın, iyi ki benimlesin.',
+        coord: 'RA 06h 37m • Dec +16° 23′'
+      }
+    ];
+
+    // İkizler Takımyıldızı Bağlantı Çizgileri
+    const constellationLinks = [
+      ['castor', 'pollux'],
+      ['castor', 'mebsuta'],
+      ['mebsuta', 'tejat'],
+      ['pollux', 'wasat'],
+      ['wasat', 'mekbuda'],
+      ['mekbuda', 'alhena'],
+      ['mebsuta', 'wasat']
+    ];
+
+    let starsData = JSON.parse(localStorage.getItem('hatice_yusuf_stars_v2')) || structuredClone(defaultStars);
+    let finalLetterText = localStorage.getItem('hatice_yusuf_letter_v2') || document.getElementById('finalLetterContent').innerHTML;
+    document.getElementById('finalLetterContent').innerHTML = finalLetterText;
+
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      generateBackgroundStars();
+    }
+
+    function generateBackgroundStars() {
+      bgStars = [];
+      const count = Math.floor((width * height) / 4800);
+      for (let i = 0; i < count; i++) {
+        bgStars.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          r: Math.random() * 1.45 + 0.3,
+          alpha: Math.random() * 0.7 + 0.2,
+          speed: Math.random() * 0.018 + 0.005,
+          phase: Math.random() * Math.PI * 2
+        });
+      }
+    }
+
+    function getStarScreenPos(star) {
+      const spreadX = Math.min(width * 0.85, 760);
+      const spreadY = Math.min(height * 0.76, 620);
+      const offsetX = (width - spreadX) / 2;
+      const offsetY = (height - spreadY) / 2 + 12;
+      return {
+        x: offsetX + star.nx * spreadX,
+        y: offsetY + star.ny * spreadY
+      };
+    }
+
+    function spawnShootingStar(showLoveMessage = false) {
+      const startX = width * (0.25 + Math.random() * 0.55);
+      const startY = height * (0.14 + Math.random() * 0.25);
+      const angle = Math.PI * (0.72 + Math.random() * 0.14);
+      const speed = 9 + Math.random() * 4;
+
+      shootingStars.push({
+        x: startX,
+        y: startY,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        len: 130 + Math.random() * 60,
+        alpha: 1
+      });
+
+      if (showLoveMessage) {
+        const loveEl = document.getElementById('shootingLoveText');
+        const textX = Math.min(Math.max(startX - 70, 140), width - 140);
+        const textY = Math.min(Math.max(startY + 55, 130), height - 130);
+
+        loveEl.style.left = `${textX}px`;
+        loveEl.style.top = `${textY}px`;
+        loveEl.classList.remove('visible');
+        void loveEl.offsetWidth;
+        loveEl.classList.add('visible');
+
+        clearTimeout(loveTextTimeout);
+        loveTextTimeout = setTimeout(() => {
+          loveEl.classList.remove('visible');
+        }, 3200);
+      }
+    }
+
+    function draw(time) {
+      ctx.clearRect(0, 0, width, height);
+
+      const nebula = ctx.createRadialGradient(width * 0.46, height * 0.48, 20, width * 0.46, height * 0.48, Math.max(width, height) * 0.52);
+      nebula.addColorStop(0, 'rgba(56, 97, 178, 0.16)');
+      nebula.addColorStop(0.5, 'rgba(245, 208, 118, 0.04)');
+      nebula.addColorStop(1, 'rgba(3, 5, 12, 0)');
+      ctx.fillStyle = nebula;
+      ctx.fillRect(0, 0, width, height);
+
+      for (const s of bgStars) {
+        const twinkle = 0.55 + 0.45 * Math.sin(time * s.speed + s.phase);
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(226, 232, 240, ${s.alpha * twinkle})`;
+        ctx.fill();
+      }
+
+      const starMap = {};
+      starsData.forEach(st => {
+        starMap[st.id] = { ...st, pos: getStarScreenPos(st) };
+      });
+
+      ctx.save();
+      for (const [idA, idB] of constellationLinks) {
+        const a = starMap[idA];
+        const b = starMap[idB];
+        if (!a || !b) continue;
+
+        const bothDiscovered = discoveredIds.has(idA) && discoveredIds.has(idB);
+        ctx.beginPath();
+        ctx.moveTo(a.pos.x, a.pos.y);
+        ctx.lineTo(b.pos.x, b.pos.y);
+        ctx.strokeStyle = bothDiscovered
+          ? 'rgba(245, 208, 118, 0.65)'
+          : 'rgba(147, 197, 253, 0.26)';
+        ctx.lineWidth = bothDiscovered ? 1.8 : 1.15;
+        ctx.setLineDash(bothDiscovered ? [] : [5, 5]);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      for (const st of starsData) {
+        const { x, y } = starMap[st.id].pos;
+        const isDiscovered = discoveredIds.has(st.id);
+        const isHovered = hoveredStar && hoveredStar.id === st.id;
+        const pulse = 1 + 0.14 * Math.sin(time * 0.004 + st.nx * 10);
+        const radius = st.size * (isHovered ? 1.35 : pulse);
+
+        const glowRadius = radius * (isDiscovered ? 5.5 : 4.2);
+        const grad = ctx.createRadialGradient(x, y, 0, x, y, glowRadius);
+        grad.addColorStop(0, isDiscovered ? 'rgba(245, 208, 118, 0.7)' : 'rgba(147, 197, 253, 0.5)');
+        grad.addColorStop(1, 'rgba(245, 208, 118, 0)');
+        ctx.beginPath();
+        ctx.arc(x, y, glowRadius, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        ctx.save();
+        ctx.strokeStyle = isDiscovered ? 'rgba(254, 243, 199, 0.85)' : 'rgba(191, 219, 254, 0.65)';
+        ctx.lineWidth = 1.1;
+        const spike = radius * 2.4;
+        ctx.beginPath();
+        ctx.moveTo(x - spike, y);
+        ctx.lineTo(x + spike, y);
+        ctx.moveTo(x, y - spike);
+        ctx.lineTo(x, y + spike);
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = isDiscovered ? '#fef08a' : '#ffffff';
+        ctx.fill();
+
+        ctx.font = '500 12px "Plus Jakarta Sans", sans-serif';
+        ctx.fillStyle = isDiscovered ? '#f5d076' : 'rgba(226, 232, 240, 0.78)';
+        ctx.textAlign = 'left';
+        ctx.fillText(st.name, x + radius + 9, y + 4);
+      }
+
+      for (let i = shootingStars.length - 1; i >= 0; i--) {
+        const ss = shootingStars[i];
+        ss.x += ss.vx;
+        ss.y += ss.vy;
+        ss.alpha -= 0.015;
+
+        if (ss.alpha <= 0) {
+          shootingStars.splice(i, 1);
+          continue;
+        }
+
+        const tailX = ss.x - (ss.vx / 10) * ss.len;
+        const tailY = ss.y - (ss.vy / 10) * ss.len;
+        const grad = ctx.createLinearGradient(ss.x, ss.y, tailX, tailY);
+        grad.addColorStop(0, `rgba(255, 251, 235, ${ss.alpha})`);
+        grad.addColorStop(0.4, `rgba(245, 208, 118, ${ss.alpha * 0.55})`);
+        grad.addColorStop(1, 'rgba(245, 208, 118, 0)');
+
+        ctx.beginPath();
+        ctx.moveTo(ss.x, ss.y);
+        ctx.lineTo(tailX, tailY);
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 2.4;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(ss.x, ss.y, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${ss.alpha})`;
+        ctx.fill();
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    function findStarAt(clientX, clientY) {
+      for (const st of starsData) {
+        const pos = getStarScreenPos(st);
+        const dist = Math.hypot(clientX - pos.x, clientY - pos.y);
+        if (dist <= 28) return st;
+      }
+      return null;
+    }
+
+    canvas.addEventListener('mousemove', (e) => {
+      hoveredStar = findStarAt(e.clientX, e.clientY);
+      canvas.style.cursor = hoveredStar ? 'pointer' : 'crosshair';
+    });
+
+    canvas.addEventListener('click', (e) => {
+      const clicked = findStarAt(e.clientX, e.clientY);
+      if (clicked) {
+        openStarCard(clicked);
+      }
+    });
+
+    function openStarCard(star) {
+      discoveredIds.add(star.id);
+      updateProgress();
+
+      document.getElementById('modalStarCode').textContent = star.code;
+      document.getElementById('modalStarTitle').textContent = star.title;
+      document.getElementById('modalStarMsg').textContent = star.message;
+      document.getElementById('modalStarCoord').textContent = `${star.name} • ${star.coord}`;
+      document.getElementById('starModal').classList.add('active');
+    }
+
+    function updateProgress() {
+      const count = discoveredIds.size;
+      const total = starsData.length;
+      document.getElementById('progressText').textContent =
+        `İkizler'in parlayan yıldızlarına dokun (${count}/${total} keşfedildi)`;
+
+      if (count === total) {
+        document.getElementById('openLetterBtn').classList.add('show');
+      }
+    }
+
+    document.getElementById('closeStarModal').onclick = () =>
+      document.getElementById('starModal').classList.remove('active');
+
+    document.getElementById('openLetterBtn').onclick = () =>
+      document.getElementById('letterModal').classList.add('active');
+
+    document.getElementById('closeLetterModal').onclick = () =>
+      document.getElementById('letterModal').classList.remove('active');
+
+    document.getElementById('shootingStarBtn').onclick = () => {
+      spawnShootingStar(true);
+    };
+
+    document.getElementById('editBtn').onclick = () => {
+      const container = document.getElementById('editFieldsContainer');
+      container.innerHTML = '';
+      starsData.forEach((st, idx) => {
+        container.innerHTML += `
+          <div class="form-group">
+            <label>${st.name} Yıldızı Başlığı & Mesajı</label>
+            <input type="text" id="editTitle_${idx}" value="${st.title.replace(/"/g, '"')}" style="margin-bottom:6px;" />
+            <textarea id="editMsg_${idx}" rows="2">${st.message}</textarea>
+          </div>
+        `;
+      });
+      document.getElementById('editFinalLetter').value =
+        document.getElementById('finalLetterContent').innerText;
+      document.getElementById('editModal').classList.add('active');
+    };
+
+    document.getElementById('closeEditModal').onclick = () =>
+      document.getElementById('editModal').classList.remove('active');
+
+    document.getElementById('saveEditBtn').onclick = () => {
+      starsData.forEach((st, idx) => {
+        st.title = document.getElementById(`editTitle_${idx}`).value;
+        st.message = document.getElementById(`editMsg_${idx}`).value;
+      });
+      const rawLetter = document.getElementById('editFinalLetter').value;
+      const formattedLetter = rawLetter.replace(/\n/g, '<br>');
+      document.getElementById('finalLetterContent').innerHTML = formattedLetter;
+
+      localStorage.setItem('hatice_yusuf_stars_v2', JSON.stringify(starsData));
+      localStorage.setItem('hatice_yusuf_letter_v2', formattedLetter);
+      document.getElementById('editModal').classList.remove('active');
+    };
+
+    document.getElementById('resetDefaultBtn').onclick = () => {
+      localStorage.removeItem('hatice_yusuf_stars_v2');
+      localStorage.removeItem('hatice_yusuf_letter_v2');
+      location.reload();
+    };
+
+    document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+      backdrop.addEventListener('click', (e) => {
+        if (e.target === backdrop) backdrop.classList.remove('active');
+      });
+    });
+
+    window.addEventListener('resize', resize);
+    resize();
+    requestAnimationFrame(draw);
+
+    setInterval(() => {
+      if (Math.random() > 0.45) spawnShootingStar(false);
+    }, 6500);
+  </script>
+</body>
+</html>
